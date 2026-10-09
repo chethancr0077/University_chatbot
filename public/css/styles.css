@@ -1,0 +1,258 @@
+/* UniMate AI Design System & Styling */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+  --font-main: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  /* Dark Theme (Default) */
+  --bg-primary: #0b0f19;
+  --bg-secondary: #111827;
+  --bg-tertiary: #1f293d;
+  --bg-sidebar: #0d121f;
+  --bg-card: rgba(17, 24, 39, 0.75);
+  --border-color: rgba(255, 255, 255, 0.08);
+  --border-hover: rgba(255, 255, 255, 0.16);
+  
+  --text-main: #f3f4f6;
+  --text-muted: #9ca3af;
+  --text-dim: #6b7280;
+
+  --accent-primary: #4f46e5;
+  --accent-secondary: #6366f1;
+  --accent-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
+  --accent-glow: rgba(99, 102, 241, 0.25);
+
+  --chat-user-bg: #2e384d;
+  --chat-ai-bg: rgba(17, 24, 39, 0.85);
+
+  --badge-uni-bg: rgba(99, 102, 241, 0.15);
+  --badge-uni-text: #818cf8;
+  --badge-gen-bg: rgba(16, 185, 129, 0.15);
+  --badge-gen-text: #34d399;
+}
+
+[data-theme="light"] {
+  --bg-primary: #f8fafc;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #f1f5f9;
+  --bg-sidebar: #ffffff;
+  --bg-card: rgba(255, 255, 255, 0.9);
+  --border-color: rgba(0, 0, 0, 0.08);
+  --border-hover: rgba(0, 0, 0, 0.16);
+
+  --text-main: #0f172a;
+  --text-muted: #475569;
+  --text-dim: #94a3b8;
+
+  --chat-user-bg: #e2e8f0;
+  --chat-ai-bg: #ffffff;
+
+  --accent-primary: #4f46e5;
+  --accent-secondary: #6366f1;
+  --accent-glow: rgba(99, 102, 241, 0.15);
+
+  --badge-uni-bg: rgba(79, 70, 229, 0.1);
+  --badge-uni-text: #4f46e5;
+  --badge-gen-bg: rgba(16, 185, 129, 0.1);
+  --badge-gen-text: #059669;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-main);
+  background-color: var(--bg-primary);
+  color: var(--text-main);
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Glassmorphism Classes */
+.glass-panel {
+  background: var(--bg-card);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-color);
+}
+
+.gradient-text {
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gradient-bg {
+  background: var(--accent-gradient);
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-hover);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-dim);
+}
+
+/* Markdown Rendering in Chat */
+.markdown-body {
+  color: inherit;
+  font-size: 0.965rem;
+  line-height: 1.65;
+}
+
+.markdown-body h1, .markdown-body h2, .markdown-body h3, .markdown-body h4 {
+  color: var(--text-main);
+  font-weight: 700;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.015em;
+}
+
+.markdown-body h3 {
+  font-size: 1.15rem;
+}
+
+.markdown-body p {
+  margin-bottom: 0.75rem;
+}
+
+.markdown-body ul, .markdown-body ol {
+  margin-left: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.markdown-body li {
+  margin-bottom: 0.25rem;
+}
+
+.markdown-body blockquote {
+  border-left: 3px solid var(--accent-secondary);
+  padding: 0.5rem 1rem;
+  margin: 0.75rem 0;
+  background: rgba(99, 102, 241, 0.05);
+  border-radius: 0 0.5rem 0.5rem 0;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.markdown-body table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+  font-size: 0.875rem;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+}
+
+.markdown-body th {
+  background: var(--bg-tertiary);
+  color: var(--text-main);
+  font-weight: 600;
+  text-align: left;
+  padding: 0.65rem 0.85rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.markdown-body td {
+  padding: 0.6rem 0.85rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.markdown-body tr:last-child td {
+  border-bottom: none;
+}
+
+.markdown-body tr:hover td {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+/* Code Blocks */
+.markdown-body pre {
+  background: #0d1117 !important;
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin: 0.85rem 0;
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  position: relative;
+}
+
+.markdown-body code:not(pre code) {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  background: rgba(99, 102, 241, 0.12);
+  color: #a5b4fc;
+  padding: 0.15rem 0.4rem;
+  border-radius: 0.3rem;
+  border: 1px solid rgba(99, 102, 241, 0.2);
+}
+
+/* Pulse animation for voice listening */
+@keyframes micPulse {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+  70% { transform: scale(1.08); box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+
+.mic-recording {
+  animation: micPulse 1.5s infinite;
+  background-color: #ef4444 !important;
+  color: #ffffff !important;
+}
+
+/* Typing Dots Animation */
+.typing-dot {
+  width: 7px;
+  height: 7px;
+  background-color: var(--accent-secondary);
+  border-radius: 50%;
+  animation: typingBounce 1.4s infinite ease-in-out both;
+}
+.typing-dot:nth-child(1) { animation-delay: -0.32s; }
+.typing-dot:nth-child(2) { animation-delay: -0.16s; }
+
+@keyframes typingBounce {
+  0%, 80%, 100% { transform: scale(0); opacity: 0.3; }
+  40% { transform: scale(1); opacity: 1; }
+}
+
+/* Transitions */
+.smooth-transition {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Print Styles for Report Card */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #reportCardPrintArea, #reportCardPrintArea * {
+    visibility: visible;
+  }
+  #reportCardPrintArea {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    background: #fff !important;
+    color: #000 !important;
+  }
+}

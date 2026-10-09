@@ -2,7 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
-const { getDb, initSchema } = require('./database/db');
+const { getDb, dbGet, initSchema } = require('./database/db');
 
 // Route modules
 const authRoutes = require('./server/routes/auth');
@@ -41,16 +41,26 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+app.use('/api', (req, res) => {
+  res.status(404).json({ error: 'API endpoint not found.' });
+});
+
 // SPA fallback
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Start Express Server
+// Start Express Server locally. Vercel imports and exports the app as a function.
 async function startServer() {
   try {
-    // Ensure DB connection
     getDb();
+    await initSchema();
+    const userCount = await dbGet('SELECT COUNT(*) AS count FROM users');
+    if (userCount.count === 0) {
+      const { seedDatabase } = require('./database/seed');
+      await seedDatabase();
+    }
+
     console.log('✅ SQLite Database connected.');
 
     app.listen(PORT, () => {
@@ -69,4 +79,8 @@ async function startServer() {
   }
 }
 
-startServer();
+if (require.main === module) {
+  startServer();
+}
+
+module.exports = app;

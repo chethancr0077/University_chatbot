@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UniMate AI — Universal Campus Assistant & Academic Intelligence</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220%22%2032%2032%22><text y=%2226%22 font-size=%2226%22>🎓</text></svg>">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts & App Stylesheet -->
+  <link rel="stylesheet" href="css/styles.css">
+  
+  <!-- Highlight.js for code syntax highlighting -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  
+  <!-- Marked.js for markdown rendering -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  
+  <!-- Chart.js for responsive visual charts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-[#0b0f19] text-[#f3f4f6] flex h-screen overflow-hidden antialiased select-none">
+
+  <!-- ======================================================== -->
+  <!-- 1. LEFT SIDEBAR                                          -->
+  <!-- ======================================================== -->
+  <aside id="sidebar" class="w-72 bg-[#0d121f] border-r border-white/10 flex flex-col h-full z-30 transition-all duration-300 shrink-0">
+    <!-- Brand Header -->
+    <div class="p-4 border-b border-white/10 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl gradient-bg flex items-center justify-center text-white shadow-lg shadow-indigo-500/20">
+          <i data-lucide="sparkles" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h1 class="font-bold text-base tracking-tight flex items-center gap-1.5">
+            UniMate <span class="gradient-text text-xs uppercase px-1.5 py-0.5 rounded bg-indigo-500/10 font-extrabold border border-indigo-500/20">AI</span>
+          </h1>
+          <p class="text-[11px] text-gray-400 font-medium">Campus Intelligence System</p>
+        </div>
+      </div>
+      <button id="sidebarCloseBtn" class="lg:hidden text-gray-400 hover:text-white p-1 rounded-lg">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+    </div>
+
+    <!-- New Chat & Navigation Buttons -->
+    <div class="p-3 space-y-2">
+      <button id="newChatBtn" class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-sm transition-all shadow-md shadow-indigo-600/20 group">
+        <span class="flex items-center gap-2">
+          <i data-lucide="plus-circle" class="w-4 h-4"></i>
+          <span>New Chat</span>
+        </span>
+        <kbd class="text-[10px] bg-white/20 px-1.5 py-0.5 rounded font-mono group-hover:bg-white/30">Ctrl+K</kbd>
+      </button>
+
+      <!-- Navigation Views -->
+      <div class="grid grid-cols-2 gap-1.5 pt-1">
+        <button id="navChatBtn" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/10 text-white text-xs font-semibold hover:bg-white/15 transition-colors">
+          <i data-lucide="message-square" class="w-3.5 h-3.5 text-indigo-400"></i>
+          <span>Chat AI</span>
+        </button>
+        <button id="navDashboardBtn" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 text-gray-300 text-xs font-medium hover:bg-white/10 hover:text-white transition-colors">
+          <i data-lucide="layout-dashboard" class="w-3.5 h-3.5 text-emerald-400"></i>
+          <span>Dashboard</span>
+        </button>
+        <button id="navInsightsBtn" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 text-gray-300 text-xs font-medium hover:bg-white/10 hover:text-white transition-colors">
+          <i data-lucide="lightbulb" class="w-3.5 h-3.5 text-amber-400"></i>
+          <span>AI Insights</span>
+        </button>
+        <button id="navPredictorBtn" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 text-gray-300 text-xs font-medium hover:bg-white/10 hover:text-white transition-colors">
+          <i data-lucide="calculator" class="w-3.5 h-3.5 text-purple-400"></i>
+          <span>Predictor</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Search Conversations -->
+    <div class="px-3 pb-2">
+      <div class="relative">
+        <i data-lucide="search" class="w-3.5 h-3.5 absolute left-3 top-2.5 text-gray-400"></i>
+        <input id="convSearchInput" type="text" placeholder="Search conversations..." class="w-full bg-white/5 border border-white/10 rounded-lg pl-8 pr-3 py-1.5 text-xs text-gray-200 placeholder-gray-500 focus:outline-none focus:border-indigo-500/50">
+      </div>
+    </div>
+
+    <!-- Conversation History List -->
+    <div class="flex-1 overflow-y-auto px-3 py-2 space-y-1" id="conversationsList">
+      <div class="text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-2 py-1">Recent Chats</div>
+      <div id="convLoadingState" class="text-xs text-gray-500 px-2 py-3">Loading history...</div>
+    </div>
+
+    <!-- Sidebar Bottom Controls -->
+    <div class="p-3 border-t border-white/10 space-y-2 bg-[#090d16]">
+      <div class="flex items-center justify-between text-xs text-gray-400 px-1">
+        <button id="clearAllChatsBtn" class="hover:text-red-400 transition-colors flex items-center gap-1">
+          <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+          <span>Clear Chats</span>
+        </button>
+        <button id="openReportBtn" class="hover:text-indigo-400 transition-colors flex items-center gap-1">
+          <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
+          <span>Transcript</span>
+        </button>
+      </div>
+
+      <!-- Authenticated User Profile Card -->
+      <div class="p-2.5 rounded-xl bg-white/5 border border-white/10 flex items-center justify-between">
+        <div class="flex items-center gap-2.5 overflow-hidden">
+          <div id="userAvatar" class="w-8 h-8 rounded-lg bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 flex items-center justify-center font-bold text-xs shrink-0">
+            AS
+          </div>
+          <div class="overflow-hidden">
+            <div id="userName" class="text-xs font-semibold text-white truncate">Aarav Sharma</div>
+            <div class="flex items-center gap-1.5">
+              <span id="userRoleBadge" class="text-[10px] font-bold px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 uppercase">STUDENT</span>
+              <span id="userSrn" class="text-[10px] font-mono text-gray-400 truncate">1MS21CS001</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-1">
+          <button onclick="logoutUser()" title="Sign Out / Switch SRN" class="p-1.5 hover:bg-white/10 rounded-lg text-gray-400 hover:text-red-400 transition-colors">
+            <i data-lucide="log-out" class="w-4 h-4"></i>
+          </button>
+          <button id="settingsBtn" title="Settings" class="p-1.5 hover:bg-white/10 rounded-lg text-gray-400 hover:text-white transition-colors">
+            <i data-lucide="settings" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ======================================================== -->
+  <!-- 2. MAIN VIEW CONTAINER                                   -->
+  <!-- ======================================================== -->
+  <main class="flex-1 flex flex-col h-full overflow-hidden relative">
+
+    <!-- Top Navigation Bar -->
+    <header class="h-14 border-b border-white/10 bg-[#0d121f]/80 backdrop-blur-md px-4 flex items-center justify-between z-20 shrink-0">
+      <div class="flex items-center gap-3">
+        <button id="sidebarToggleBtn" class="p-1.5 hover:bg-white/10 rounded-lg text-gray-400 hover:text-white transition-colors">
+          <i data-lucide="menu" class="w-5 h-5"></i>
+        </button>
+
+        <div class="flex items-center gap-2">
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span>UniMate Grounded Engine</span>
+          </span>
+          <span class="hidden md:inline text-xs text-gray-500">• Direct Answer Mode</span>
+        </div>
+      </div>
+
+      <!-- User Authentication & Controls Bar -->
+      <div class="flex items-center gap-2.5">
+        <!-- Active Authenticated SRN Pill -->
+        <div id="headerAuthBadge" class="flex items-center gap-2 bg-white/5 border border-white/10 rounded-xl px-3 py-1 text-xs">
+          <span class="text-gray-400">SRN:</span>
+          <span id="headerSrn" class="font-mono font-bold text-indigo-400">1MS21CS001</span>
+          <button onclick="logoutUser()" class="text-[11px] text-gray-400 hover:text-red-400 font-medium ml-1.5 border-l border-white/10 pl-2 transition-colors">
+            Sign Out
+          </button>
+        </div>
+
+        <!-- Voice Toggle Button -->
+        <button id="ttsToggleBtn" title="Toggle Text-to-Speech Output" class="p-2 hover:bg-white/10 rounded-lg text-gray-400 hover:text-white transition-colors">
+          <i data-lucide="volume-2" class="w-4 h-4"></i>
+        </button>
+
+        <!-- Theme Toggle -->
+        <button id="themeToggleBtn" title="Toggle Dark/Light Mode" class="p-2 hover:bg-white/10 rounded-lg text-gray-400 hover:text-white transition-colors">
+          <i data-lucide="sun" class="w-4 h-4"></i>
+        </button>
+
+        <!-- Clear View / Reset -->
+        <button id="clearChatBtn" title="Reset Current Chat" class="p-2 hover:bg-white/10 rounded-lg text-gray-400 hover:text-red-400 transition-colors">
+          <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Chat Messages Scroll Container -->
+    <div id="chatScrollArea" class="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
+      
+      <!-- Welcome Hero -->
+      <div id="welcomeHero" class="max-w-2xl mx-auto py-12 px-4 text-center space-y-5">
+        <div class="inline-flex p-3 rounded-2xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 shadow-xl shadow-indigo-500/10">
+          <i data-lucide="graduation-cap" class="w-10 h-10"></i>
+        </div>
+
+        <div class="space-y-2">
+          <h2 class="text-2xl md:text-3xl font-extrabold tracking-tight">
+            UniMate <span class="gradient-text">AI</span>
+          </h2>
+          <p id="heroSubtitle" class="text-sm md:text-base font-semibold text-indigo-300 max-w-lg mx-auto">
+            “Ask Anything. Your University Knows.”
+          </p>
+          <p class="text-xs text-gray-400 max-w-md mx-auto">
+            One universal chatbot for general AI reasoning, grounded university database queries, student records, faculty lookups, and campus analytics.
+          </p>
+        </div>
+
+        <!-- Suggested Example Prompts specified in prompt -->
+        <div class="pt-2 flex flex-wrap items-center justify-center gap-2 max-w-xl mx-auto">
+          <button onclick="sendQuickPrompt('Show my results')" class="px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-xs text-gray-300 hover:text-white transition-all hover:scale-105 flex items-center gap-1.5">
+            <span>📊</span><span>Show my results</span>
+          </button>
+          <button onclick="sendQuickPrompt('What is my attendance?')" class="px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-xs text-gray-300 hover:text-white transition-all hover:scale-105 flex items-center gap-1.5">
+            <span>🕒</span><span>What is my attendance?</span>
+          </button>
+          <button onclick="sendQuickPrompt('Who teaches DBMS?')" class="px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-xs text-gray-300 hover:text-white transition-all hover:scale-105 flex items-center gap-1.5">
+            <span>👨‍🏫</span><span>Who teaches DBMS?</span>
+          </button>
+          <button onclick="sendQuickPrompt('Show university statistics')" class="px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-xs text-gray-300 hover:text-white transition-all hover:scale-105 flex items-center gap-1.5">
+            <span>🏛️</span><span>Show university statistics</span>
+          </button>
+          <button onclick="sendQuickPrompt('Analyze my performance')" class="px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-xs text-gray-300 hover:text-white transition-all hover:scale-105 flex items-center gap-1.5">
+            <span>🎯</span><span>Analyze my performance</span>
+          </button>
+          <button onclick="sendQuickPrompt('Show pass/fail statistics')" class="px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-xs text-gray-300 hover:text-white transition-all hover:scale-105 flex items-center gap-1.5">
+            <span>📈</span><span>Show pass/fail statistics</span>
+          </button>
+          <button onclick="sendQuickPrompt('What is artificial intelligence?')" class="px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-xs text-gray-300 hover:text-white transition-all hover:scale-105 flex items-center gap-1.5">
+            <span>🤖</span><span>What is artificial intelligence?</span>
+          </button>
+          <button onclick="sendQuickPrompt('Nan attendance eshtu ide?')" class="px-3 py-1.5 rounded-full bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/30 text-xs text-indigo-300 hover:text-white transition-all hover:scale-105 flex items-center gap-1.5" title="Kannada query for 'What is my attendance?'">
+            <span>🌐</span><span>Nan attendance eshtu ide? (Kannada)</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Messages Stream (dynamically rendered without suggestions) -->
+      <div id="messagesContainer" class="max-w-3xl mx-auto space-y-6"></div>
+
+      <!-- Typing Indicator -->
+      <div id="typingIndicator" class="hidden max-w-3xl mx-auto">
+        <div class="flex items-start gap-3">
+          <div class="w-8 h-8 rounded-xl gradient-bg flex items-center justify-center text-white shrink-0 shadow-md">
+            <i data-lucide="bot" class="w-4 h-4"></i>
+          </div>
+          <div class="p-3.5 rounded-2xl bg-white/5 border border-white/10 flex items-center gap-2">
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+            <span class="text-xs text-gray-400 ml-2">UniMate AI is retrieving grounded data & preparing your answer...</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Bottom Input Container -->
+    <div class="p-4 border-t border-white/10 bg-[#0d121f]/90 backdrop-blur-md shrink-0">
+      <div class="max-w-3xl mx-auto">
+        <form id="chatForm" class="relative bg-white/5 border border-white/10 rounded-2xl shadow-xl focus-within:border-indigo-500/50 focus-within:ring-2 focus-within:ring-indigo-500/20 transition-all flex flex-col">
+          
+          <!-- Textarea Input -->
+          <textarea id="messageInput" rows="1" placeholder="Type your direct question here (e.g. 'What is my attendance?', 'Who teaches Computer Networks?')..." class="w-full bg-transparent text-sm text-gray-100 placeholder-gray-500 px-4 pt-3.5 pb-2 resize-none focus:outline-none max-h-36"></textarea>
+
+          <!-- Action bar under textarea -->
+          <div class="flex items-center justify-between px-3 py-2 border-t border-white/5">
+            <div class="flex items-center gap-1.5 text-gray-400 text-xs">
+              <!-- Speech Recognition Mic Button -->
+              <button type="button" id="micBtn" title="Voice Input (Speech to Text)" class="p-2 hover:bg-white/10 rounded-lg text-gray-400 hover:text-white transition-colors">
+                <i data-lucide="mic" class="w-4 h-4"></i>
+              </button>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <span class="text-[11px] text-gray-500 hidden sm:inline">Press Enter ↵</span>
+              <button type="submit" id="sendBtn" class="p-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white transition-all shadow-md shadow-indigo-600/30 disabled:opacity-50 disabled:cursor-not-allowed">
+                <i data-lucide="arrow-up" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>
+        </form>
+
+        <p class="text-[11px] text-center text-gray-500 mt-2">
+          Responses are strictly grounded in university database records with zero hallucination.
+        </p>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ======================================================== -->
+  <!-- 3. MANDATORY SRN AUTHENTICATION PORTAL MODAL             -->
+  <!-- ======================================================== -->
+  <div id="authModal" class="fixed inset-0 bg-[#0b0f19]/90 backdrop-blur-xl z-50 flex items-center justify-center p-4">
+    <div class="bg-[#0f172a] border border-white/10 rounded-2xl w-full max-w-md p-6 sm:p-8 space-y-6 shadow-2xl relative">
+      
+      <!-- Brand & Header -->
+      <div class="text-center space-y-2">
+        <div class="w-12 h-12 rounded-2xl gradient-bg flex items-center justify-center text-white mx-auto shadow-lg shadow-indigo-500/25">
+          <i data-lucide="graduation-cap" class="w-6 h-6"></i>
+        </div>
+        <h2 class="text-xl font-bold text-white tracking-tight">University Authentication Portal</h2>
+        <p class="text-xs text-gray-400">Please sign in with your SRN / Institutional ID to continue</p>
+      </div>
+
+      <!-- Role Selector Tabs -->
+      <div class="grid grid-cols-3 gap-1 bg-white/5 p-1 rounded-xl border border-white/10 text-xs">
+        <button type="button" onclick="selectAuthRole('student')" id="tabRoleStudent" class="auth-role-tab py-1.5 rounded-lg font-semibold bg-indigo-600 text-white transition-all">
+          Student
+        </button>
+        <button type="button" onclick="selectAuthRole('faculty')" id="tabRoleFaculty" class="auth-role-tab py-1.5 rounded-lg font-medium text-gray-400 hover:text-white transition-all">
+          Faculty
+        </button>
+        <button type="button" onclick="selectAuthRole('admin')" id="tabRoleAdmin" class="auth-role-tab py-1.5 rounded-lg font-medium text-gray-400 hover:text-white transition-all">
+          Admin
+        </button>
+      </div>
+
+      <!-- Login Form -->
+      <form id="srnLoginForm" class="space-y-4">
+        <!-- Error Banner -->
+        <div id="authErrorBanner" class="hidden p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs"></div>
+
+        <div>
+          <label id="authSrnLabel" class="text-xs font-semibold text-gray-300 block mb-1.5">Student Registration Number (SRN)</label>
+          <div class="relative">
+            <i data-lucide="badge-check" class="w-4 h-4 absolute left-3 top-3 text-gray-500"></i>
+            <input id="authSrnInput" type="text" placeholder="e.g. 1MS21CS001" required class="w-full bg-white/5 border border-white/10 rounded-xl pl-9 pr-3 py-2.5 text-sm text-white font-mono placeholder-gray-500 focus:outline-none focus:border-indigo-500/50">
+          </div>
+        </div>
+
+        <div>
+          <label class="text-xs font-semibold text-gray-300 block mb-1.5">Account Password</label>
+          <div class="relative">
+            <i data-lucide="lock" class="w-4 h-4 absolute left-3 top-3 text-gray-500"></i>
+            <input id="authPasswordInput" type="password" placeholder="••••••••" required class="w-full bg-white/5 border border-white/10 rounded-xl pl-9 pr-3 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500/50">
+          </div>
+        </div>
+
+        <button type="submit" id="authSubmitBtn" class="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm transition-all shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-2">
+          <span>Authenticate with SRN</span>
+          <i data-lucide="arrow-right" class="w-4 h-4"></i>
+        </button>
+      </form>
+
+      <!-- Quick Demo Credentials (1-Click Fill) -->
+      <div class="pt-2 border-t border-white/10 space-y-2">
+        <div class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider text-center">Demo Credentials (Click to fill)</div>
+        <div class="grid grid-cols-3 gap-1.5 text-[11px]">
+          <button type="button" onclick="fillDemoCredentials('1MS21CS001', 'password123', 'student')" class="p-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-gray-300 hover:text-white transition-all text-center">
+            <div class="font-bold text-indigo-400">Student</div>
+            <div class="font-mono text-[10px]">1MS21CS001</div>
+          </button>
+          <button type="button" onclick="fillDemoCredentials('FAC-CSE-001', 'password123', 'faculty')" class="p-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-gray-300 hover:text-white transition-all text-center">
+            <div class="font-bold text-emerald-400">Faculty</div>
+            <div class="font-mono text-[10px]">FAC-CSE-001</div>
+          </button>
+          <button type="button" onclick="fillDemoCredentials('ADMIN-001', 'password123', 'admin')" class="p-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-gray-300 hover:text-white transition-all text-center">
+            <div class="font-bold text-purple-400">Admin</div>
+            <div class="font-mono text-[10px]">ADMIN-001</div>
+          </button>
+        </div>
+        <p class="text-[10px] text-center text-gray-500">Default Demo Password: <code class="text-gray-400 font-mono">password123</code></p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- 4. OTHER MODALS (DASHBOARD, PREDICTOR, REPORT CARD)       -->
+  <!-- ======================================================== -->
+
+  <!-- A. Interactive Dashboard Modal -->
+  <div id="dashboardModal" class="fixed inset-0 bg-black/70 backdrop-blur-md z-50 hidden flex items-center justify-center p-3 sm:p-6">
+    <div class="bg-[#0f172a] border border-white/10 rounded-2xl w-full max-w-5xl max-h-[92vh] flex flex-col overflow-hidden shadow-2xl">
+      <div class="p-4 border-b border-white/10 flex items-center justify-between bg-white/5">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg gradient-bg flex items-center justify-center text-white">
+            <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <h3 id="dashboardTitle" class="font-bold text-base text-white">Academic Analytics Dashboard</h3>
+            <p id="dashboardSubtitle" class="text-xs text-gray-400">Live Institutional Metrics & Visualizations</p>
+          </div>
+        </div>
+        <button onclick="closeModal('dashboardModal')" class="p-1.5 hover:bg-white/10 rounded-lg text-gray-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div id="dashboardContent" class="p-4 md:p-6 overflow-y-auto space-y-6 flex-1"></div>
+    </div>
+  </div>
+
+  <!-- B. Attendance Predictor Tool Modal -->
+  <div id="predictorModal" class="fixed inset-0 bg-black/70 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-[#0f172a] border border-white/10 rounded-2xl w-full max-w-md p-6 space-y-5 shadow-2xl">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-purple-500/20 text-purple-400 border border-purple-500/30 flex items-center justify-center">
+            <i data-lucide="calculator" class="w-4 h-4"></i>
+          </div>
+          <h3 class="font-bold text-base text-white">AI Attendance Predictor</h3>
+        </div>
+        <button onclick="closeModal('predictorModal')" class="text-gray-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="space-y-4 text-xs">
+        <div>
+          <label class="text-gray-300 font-medium block mb-1">Classes Currently Attended</label>
+          <input id="predAttended" type="number" value="38" class="w-full bg-white/5 border border-white/10 rounded-lg p-2.5 text-white">
+        </div>
+        <div>
+          <label class="text-gray-300 font-medium block mb-1">Total Classes Conducted</label>
+          <input id="predTotal" type="number" value="50" class="w-full bg-white/5 border border-white/10 rounded-lg p-2.5 text-white">
+        </div>
+        <div>
+          <label class="text-gray-300 font-medium block mb-1">Upcoming Classes to Attend</label>
+          <input id="predNext" type="number" value="10" class="w-full bg-white/5 border border-white/10 rounded-lg p-2.5 text-white">
+        </div>
+        <button onclick="runAttendanceSimulation()" class="w-full py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-semibold transition-all">
+          Calculate Projection
+        </button>
+      </div>
+
+      <div id="predResult" class="p-3.5 rounded-xl bg-white/5 border border-white/10 text-xs space-y-1.5 hidden"></div>
+    </div>
+  </div>
+
+  <!-- C. AI Academic Report Card Modal -->
+  <div id="reportCardModal" class="fixed inset-0 bg-black/70 backdrop-blur-md z-50 hidden flex items-center justify-center p-3 sm:p-6">
+    <div class="bg-[#0f172a] border border-white/10 rounded-2xl w-full max-w-3xl max-h-[92vh] flex flex-col overflow-hidden shadow-2xl">
+      <div class="p-4 border-b border-white/10 flex items-center justify-between bg-white/5">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 flex items-center justify-center">
+            <i data-lucide="file-text" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-base text-white">Official Academic Transcript</h3>
+            <p class="text-xs text-gray-400">Institutional Evaluation & AI Advisor Report</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="window.print()" class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center gap-1.5">
+            <i data-lucide="printer" class="w-3.5 h-3.5"></i>
+            <span>Print Transcript</span>
+          </button>
+          <button onclick="closeModal('reportCardModal')" class="p-1.5 hover:bg-white/10 rounded-lg text-gray-400 hover:text-white">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+      </div>
+
+      <div id="reportCardPrintArea" class="p-6 overflow-y-auto space-y-6 flex-1 text-xs"></div>
+    </div>
+  </div>
+
+  <!-- D. AI Insights Hub Modal -->
+  <div id="insightsModal" class="fixed inset-0 bg-black/70 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-[#0f172a] border border-white/10 rounded-2xl w-full max-w-2xl max-h-[85vh] flex flex-col overflow-hidden shadow-2xl">
+      <div class="p-4 border-b border-white/10 flex items-center justify-between bg-white/5">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center justify-center">
+            <i data-lucide="lightbulb" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-base text-white">AI Insights Panel</h3>
+            <p class="text-xs text-gray-400">Automated Institutional Patterns & Alerts</p>
+          </div>
+        </div>
+        <button onclick="closeModal('insightsModal')" class="p-1.5 hover:bg-white/10 rounded-lg text-gray-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div id="insightsContent" class="p-6 overflow-y-auto space-y-3.5 flex-1"></div>
+    </div>
+  </div>
+
+  <!-- E. Settings Modal -->
+  <div id="settingsModal" class="fixed inset-0 bg-black/70 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-[#0f172a] border border-white/10 rounded-2xl w-full max-w-md p-6 space-y-5 shadow-2xl">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-gray-500/20 text-gray-300 border border-white/10 flex items-center justify-center">
+            <i data-lucide="settings" class="w-4 h-4"></i>
+          </div>
+          <h3 class="font-bold text-base text-white">UniMate AI Settings</h3>
+        </div>
+        <button onclick="closeModal('settingsModal')" class="text-gray-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="space-y-4 text-xs">
+        <div>
+          <label class="text-gray-300 font-medium block mb-1">AI Intelligence Engine</label>
+          <select id="settingProvider" class="w-full bg-white/5 border border-white/10 rounded-lg p-2.5 text-white">
+            <option value="builtin">Built-in Hybrid Engine (Grounded University + Local AI)</option>
+            <option value="gemini">Google Gemini 1.5 Flash (Requires API Key)</option>
+            <option value="openai">OpenAI GPT-4o-mini (Requires API Key)</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="text-gray-300 font-medium block mb-1">Optional External API Key</label>
+          <input id="settingApiKey" type="password" placeholder="AIzaSy... or sk-..." class="w-full bg-white/5 border border-white/10 rounded-lg p-2.5 text-white font-mono">
+          <p class="text-[11px] text-gray-500 mt-1">Leave empty to use the built-in offline intelligence engine with zero setup.</p>
+        </div>
+
+        <div>
+          <label class="text-gray-300 font-medium block mb-1">Speech Voice Speed (TTS)</label>
+          <input id="settingVoiceRate" type="range" min="0.8" max="1.4" step="0.1" value="1.0" class="w-full accent-indigo-500">
+        </div>
+
+        <button onclick="saveSettings()" class="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold transition-all">
+          Save Settings
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/voice.js"></script>
+  <script src="js/tools.js"></script>
+  <script src="js/dashboard.js"></script>
+  <script src="js/chat.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    lucide.createIcons();
+  </script>
+</body>
+</html>

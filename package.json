@@ -5,7 +5,11 @@
   "main": "server.js",
   "scripts": {
     "seed": "node database/seed.js",
+    "dev": "node --watch server.js",
     "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=20"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
