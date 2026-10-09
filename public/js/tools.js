@@ -197,11 +197,9 @@ async function openInsightsModal() {
 // 4. Settings Management
 function saveSettings() {
   const provider = document.getElementById('settingProvider').value;
-  const apiKey = document.getElementById('settingApiKey').value.trim();
   const rate = document.getElementById('settingVoiceRate').value;
 
   localStorage.setItem('unimate_provider', provider);
-  localStorage.setItem('unimate_api_key', apiKey);
   localStorage.setItem('unimate_voice_rate', rate);
 
   closeModal('settingsModal');
@@ -209,12 +207,10 @@ function saveSettings() {
 }
 
 function loadSettings() {
-  const provider = localStorage.getItem('unimate_provider') || 'builtin';
-  const apiKey = localStorage.getItem('unimate_api_key') || '';
+  const provider = localStorage.getItem('unimate_provider') || 'gemini';
   const rate = localStorage.getItem('unimate_voice_rate') || '1.0';
 
   if (document.getElementById('settingProvider')) document.getElementById('settingProvider').value = provider;
-  if (document.getElementById('settingApiKey')) document.getElementById('settingApiKey').value = apiKey;
   if (document.getElementById('settingVoiceRate')) document.getElementById('settingVoiceRate').value = rate;
 }
 

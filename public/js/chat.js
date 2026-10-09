@@ -50,8 +50,7 @@ async function handleChatSubmit(e) {
         message: text,
         conversationId: activeConversationId,
         clientConfig: {
-          provider: localStorage.getItem('unimate_provider') || 'builtin',
-          apiKey: localStorage.getItem('unimate_api_key') || null
+          provider: localStorage.getItem('unimate_provider') || 'gemini'
         }
       })
     });

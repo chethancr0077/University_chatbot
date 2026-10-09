@@ -497,16 +497,14 @@
         <div>
           <label class="text-gray-300 font-medium block mb-1">AI Intelligence Engine</label>
           <select id="settingProvider" class="w-full bg-white/5 border border-white/10 rounded-lg p-2.5 text-white">
+            <option value="gemini">Google Gemini 2.5 Flash (server configured)</option>
             <option value="builtin">Built-in Hybrid Engine (Grounded University + Local AI)</option>
-            <option value="gemini">Google Gemini 1.5 Flash (Requires API Key)</option>
             <option value="openai">OpenAI GPT-4o-mini (Requires API Key)</option>
           </select>
         </div>
 
         <div>
-          <label class="text-gray-300 font-medium block mb-1">Optional External API Key</label>
-          <input id="settingApiKey" type="password" placeholder="AIzaSy... or sk-..." class="w-full bg-white/5 border border-white/10 rounded-lg p-2.5 text-white font-mono">
-          <p class="text-[11px] text-gray-500 mt-1">Leave empty to use the built-in offline intelligence engine with zero setup.</p>
+          <p class="text-[11px] text-gray-500">Gemini is configured securely by the deployment owner. API keys are never entered or stored in your browser. Without a server-side key, UniMate uses its built-in offline engine.</p>
         </div>
 
         <div>

@@ -5,19 +5,19 @@
 
 const https = require('https');
 
-async function callExternalLlm({ prompt, systemPrompt, conversationHistory = [], dbContext = null, apiKey = null, provider = 'gemini' }) {
-  // If no external key is provided, return null to fallback to built-in offline engine
-  const activeKey = apiKey || process.env.GEMINI_API_KEY || process.env.OPENAI_API_KEY;
+async function callExternalLlm({ prompt, systemPrompt, conversationHistory = [], dbContext = null, provider = 'gemini' }) {
+  // Keys are server-side environment variables only; never accept them from the browser.
+  const activeKey = provider === 'openai'
+    ? process.env.OPENAI_API_KEY
+    : process.env.GEMINI_API_KEY;
   if (!activeKey) {
     return null;
   }
 
-  const effectiveProvider = apiKey ? provider : (process.env.GEMINI_API_KEY ? 'gemini' : 'openai');
-
   try {
-    if (effectiveProvider === 'gemini') {
+    if (provider === 'gemini') {
       return await callGeminiApi({ prompt, systemPrompt, conversationHistory, dbContext, key: activeKey });
-    } else if (effectiveProvider === 'openai') {
+    } else if (provider === 'openai') {
       return await callOpenAiApi({ prompt, systemPrompt, conversationHistory, dbContext, key: activeKey });
     }
   } catch (err) {
@@ -60,7 +60,8 @@ function callGeminiApi({ prompt, systemPrompt, conversationHistory, dbContext, k
       }
     });
 
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`;
+    const model = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`;
     const parsedUrl = new URL(url);
 
     const options = {
@@ -69,6 +70,7 @@ function callGeminiApi({ prompt, systemPrompt, conversationHistory, dbContext, k
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'x-goog-api-key': key,
         'Content-Length': Buffer.byteLength(postData)
       },
       timeout: 10000

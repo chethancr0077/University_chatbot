@@ -11,3 +11,5 @@ database/*.db-journal
 database/*.db-shm
 database/*.db-wal
 database/bank.db
+.vercel
+.env*

@@ -1184,14 +1184,17 @@ ${toppers.map((t, idx) => `${idx + 1}. **${t.full_name}** (\`${t.usn}\`): **${t.
   // -------------------------------------------------------------
   // BRANCH C: GENERAL AI QUERIES & EDUCATIONAL REASONING
   // -------------------------------------------------------------
-  // Check if an external LLM API key was provided (client config or env)
-  if (clientConfig.apiKey || process.env.GEMINI_API_KEY || process.env.OPENAI_API_KEY) {
+  // External provider keys remain server-side in environment variables.
+  const provider = clientConfig.provider || 'gemini';
+  const providerConfigured = provider === 'gemini'
+    ? Boolean(process.env.GEMINI_API_KEY)
+    : provider === 'openai' && Boolean(process.env.OPENAI_API_KEY);
+  if (providerConfigured) {
     const externalAnswer = await callExternalLlm({
       prompt: trimmed,
       systemPrompt: 'You are UniMate AI, an intelligent universal assistant and university companion.',
       conversationHistory: context.historyTurns || [],
-      apiKey: clientConfig.apiKey,
-      provider: clientConfig.provider || 'gemini'
+      provider
     });
 
     if (externalAnswer) {
