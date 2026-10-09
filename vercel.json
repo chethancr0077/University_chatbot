@@ -8,7 +8,8 @@
   ],
   "functions": {
     "api/index.js": {
-      "includeFiles": "{database/**,public/**}"
+      "includeFiles": "{database/**,public/**}",
+      "maxDuration": 30
     }
   }
 }

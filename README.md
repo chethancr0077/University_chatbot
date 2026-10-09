@@ -60,12 +60,14 @@ For automatic restarts while developing, use `npm run dev`.
 ## ☁️ Deploy to Vercel
 
 1. Push this project to a Git provider and import that repository in Vercel. Set the **Root Directory** to the folder containing `package.json`.
-2. In **Project Settings → Environment Variables**, set `JWT_SECRET` to a unique, long random value and add `GEMINI_API_KEY` for Gemini chat (the default model is `gemini-2.5-flash`; override with `GEMINI_MODEL` if needed). Keep keys server-side; never put them in browser settings or commit them. `PORT` is assigned by Vercel. `OPENAI_API_KEY` is optional.
+2. In **Project Settings → Environment Variables**, set `JWT_SECRET` to a unique, long random value and add `GEMINI_API_KEY` for Gemini chat (the default model is `gemini-3.8-flash`; override with `GEMINI_MODEL` if needed). Keep keys server-side; never put them in browser settings or commit them. `PORT` is assigned by Vercel. `OPENAI_API_KEY` is optional.
 3. Deploy. The included `vercel.json` routes the Express app through the Vercel Node function and packages the frontend and seeded SQLite file. The site and `/api/health` endpoint should then be available at the deployment URL.
 
 The Vercel SQLite copy is placed in `/tmp`, which is writable but **ephemeral and per serverless instance**. It is suitable for a demo; chat history and any database changes are not durable and may differ between instances or disappear after a cold start. For production or persistent user data, replace SQLite with a hosted database (for example, Neon/Postgres or Turso) before launch. Change the demo passwords and remove/disable demo login before exposing real data.
 
 Local configuration can be created by copying `.env.example` to `.env`; never commit `.env` or production secrets.
+
+To save a Gemini key to the local `.env` without displaying it while typing, run `npm run configure:gemini` in the VS Code terminal. The app loads `GEMINI_API_KEY` from `.env` at startup; restart `npm start` after configuring it. This does not configure Vercel—set the variable separately in the Vercel project settings.
 
 ---
 

@@ -60,7 +60,7 @@ function callGeminiApi({ prompt, systemPrompt, conversationHistory, dbContext, k
       }
     });
 
-    const model = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
+    const model = process.env.GEMINI_MODEL || 'gemini-3.8-flash';
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`;
     const parsedUrl = new URL(url);
 
@@ -73,7 +73,7 @@ function callGeminiApi({ prompt, systemPrompt, conversationHistory, dbContext, k
         'x-goog-api-key': key,
         'Content-Length': Buffer.byteLength(postData)
       },
-      timeout: 10000
+      timeout: 30000
     };
 
     const req = https.request(options, (res) => {
@@ -82,20 +82,36 @@ function callGeminiApi({ prompt, systemPrompt, conversationHistory, dbContext, k
       res.on('end', () => {
         try {
           const json = JSON.parse(body);
+          if (res.statusCode < 200 || res.statusCode >= 300) {
+            const errorCode = json.error && json.error.status ? json.error.status : `HTTP_${res.statusCode}`;
+            console.error(`Gemini API request rejected (${errorCode}). Check the server-side API key, model access, and quota.`);
+            resolve(null);
+            return;
+          }
+
           if (json.candidates && json.candidates[0] && json.candidates[0].content) {
             const text = json.candidates[0].content.parts.map(p => p.text).join('\n');
             resolve(text);
           } else {
+            console.error('Gemini API returned no candidate response.');
             resolve(null);
           }
         } catch (e) {
+          console.error(`Gemini API response was not valid JSON (HTTP_${res.statusCode}).`);
           resolve(null);
         }
       });
     });
 
-    req.on('error', (err) => resolve(null));
-    req.on('timeout', () => { req.destroy(); resolve(null); });
+    req.on('error', (err) => {
+      console.error(`Gemini network request failed (${err.code || 'NETWORK_ERROR'}).`);
+      resolve(null);
+    });
+    req.on('timeout', () => {
+      console.error('Gemini network request timed out.');
+      req.destroy();
+      resolve(null);
+    });
     req.write(postData);
     req.end();
   });
